@@ -1,0 +1,3 @@
+C:/Users/Diana/Documents/OneDrive/OS/project/repo/lib/bin-windows/CMakeFiles/hello.dir
+C:/Users/Diana/Documents/OneDrive/OS/project/repo/lib/bin-windows/CMakeFiles/edit_cache.dir
+C:/Users/Diana/Documents/OneDrive/OS/project/repo/lib/bin-windows/CMakeFiles/rebuild_cache.dir
