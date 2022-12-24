@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
+  "../fifo_test_wait_rw"
+  "../fifo_test_wait_rw.pdb"
   "CMakeFiles/fifo_test_wait_rw.dir/fifo/fifo_test_wait_rw.cpp.o"
-  "fifo_test_wait_rw"
-  "fifo_test_wait_rw.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

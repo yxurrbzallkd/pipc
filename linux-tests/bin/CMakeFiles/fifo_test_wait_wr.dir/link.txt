@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/fifo_test_wait_wr.dir/fifo/fifo_test_wait_wr.cpp.o  -o fifo_test_wait_wr 
+/usr/bin/c++     CMakeFiles/fifo_test_wait_wr.dir/fifo/fifo_test_wait_wr.cpp.o  -o ../fifo_test_wait_wr 

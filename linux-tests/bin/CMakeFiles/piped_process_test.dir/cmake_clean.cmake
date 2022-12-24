@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
+  "../piped_process_test"
+  "../piped_process_test.pdb"
   "CMakeFiles/piped_process_test.dir/process/piped_process_test.cpp.o"
-  "piped_process_test"
-  "piped_process_test.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

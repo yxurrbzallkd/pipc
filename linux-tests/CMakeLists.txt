@@ -1,14 +1,15 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.16)
 set(PIPC_LIB pipc)
 project(pipc
 	VERSION 1.0
 	LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 add_library(${PIPC_LIB} INTERFACE)
 
 target_include_directories(${PROJECT_NAME}
 			INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/../linux)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
 set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test)
 

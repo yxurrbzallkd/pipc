@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/fifo_test_fork_rw.dir/fifo/fifo_test_fork_rw.cpp.o  -o fifo_test_fork_rw 
+/usr/bin/c++     CMakeFiles/fifo_test_fork_rw.dir/fifo/fifo_test_fork_rw.cpp.o  -o ../fifo_test_fork_rw 

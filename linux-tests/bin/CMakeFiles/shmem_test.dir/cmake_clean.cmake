@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
+  "../shmem_test"
+  "../shmem_test.pdb"
   "CMakeFiles/shmem_test.dir/shmem/shmem_test.cpp.o"
-  "shmem_test"
-  "shmem_test.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

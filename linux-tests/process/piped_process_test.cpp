@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	while (pos != std::string::npos) {
 		p.push_back(pipc::process(s.substr(0, pos)));
 		s = s.substr(pos+1, s.size()-pos-1);
-		pos = s.find("\\");
+		pos = s.find("-");
 	}
 	p.push_back(pipc::process(s));
 	pipc::pipe_execute(p);

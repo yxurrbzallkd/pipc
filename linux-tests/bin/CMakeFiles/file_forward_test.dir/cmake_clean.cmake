@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
+  "../file_forward_test"
+  "../file_forward_test.pdb"
   "CMakeFiles/file_forward_test.dir/process/file_forward_test.cpp.o"
-  "file_forward_test"
-  "file_forward_test.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

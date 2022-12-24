@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
+  "../fifo_test_fork_rw"
+  "../fifo_test_fork_rw.pdb"
   "CMakeFiles/fifo_test_fork_rw.dir/fifo/fifo_test_fork_rw.cpp.o"
-  "fifo_test_fork_rw"
-  "fifo_test_fork_rw.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
