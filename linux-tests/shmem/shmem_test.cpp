@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#include "shmem.hpp"
+#include <pipc/shmem/shmem.hpp>
 #include <vector>
 #include <string>
 
@@ -9,7 +9,8 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	std::cout << "creating a shm" << std::endl;
 	pipc::shmem s("/shm_object", 1024, O_CREAT | O_RDWR, PROT_READ | PROT_WRITE);
-	s.setup_shm();
+	if (s.setup() != SUCCESS)
+		return -1;
 	const char* msg = "hello world!";
 	std::cout << "writing " << msg << " result " << s.write_shm(msg, 0) << std::endl;
 	char content[1025];

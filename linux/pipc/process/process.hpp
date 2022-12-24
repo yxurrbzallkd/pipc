@@ -1,3 +1,5 @@
+#ifndef PROCESS_HEADER
+#define PROCESS_HEADER
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -323,6 +325,16 @@ namespace pipc {
 				return res;
 			}
 
+			std::pair<string, string> run_grab(int in) {
+				std::pair<string, string> res;
+				if (forward_stdin(in) != SUCCESS)
+					return res;
+				result = _grab_execute(res);
+				if (result < 0)
+					warn("invalid result");
+				return res;
+			}
+
 			std::vector<string> get_args()
 			{ return arguments; }
 
@@ -375,3 +387,5 @@ namespace pipc {
 		return pipe_execute(ps);
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef PROCESS_HEADER
+#define PROCESS_HEADER
 #include <windows.h> 
 #include <stdio.h>
 #include <fcntl.h>
@@ -513,3 +515,5 @@ namespace pipc {
 		return n;
 	}
 }
+
+#endif

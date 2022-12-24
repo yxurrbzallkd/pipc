@@ -1,15 +1,11 @@
 #ifndef FIFO_HEADER
 #define FIFO_HEADER
 
-#include <stdio.h>
 #include <iostream>
-#include <sys/wait.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
-#include <string>
 #include <pipc/errors_and_warnings.hpp>
 
 #define BUF_SIZE 1024
@@ -17,7 +13,7 @@
 namespace pipc {
 	class fifo {
 		private:
-			const char* fname;
+			const char* fifo_name;
 			bool fifo_create;
 			int fifo_flag;
 			int fifo_fd;
@@ -25,32 +21,37 @@ namespace pipc {
 			bool issetup = false;
 		public:
 			fifo(const char* name, bool create, int flag)
-			: fname(name), fifo_create(create), fifo_flag(flag) { }
+			: fifo_name(name), fifo_create(create), fifo_flag(flag) { }
 			int setup() {
 				if (fifo_create) {
-					if (mkfifo(fname, S_IRUSR|S_IWUSR) < 0)
-						return FIFO_ERROR & FAILED_TO_MKFIFO;
+					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) < 0)
+						return FIFO_ERROR | FAILED_TO_MKFIFO;
+				} else {
+					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) >= 0)
+						return FIFO_ERROR | FAILED_TO_MKFIFO;
 				}
-				fifo_fd = open(fname, fifo_flag);
-				if (fifo_fd < 0)
-					return FIFO_ERROR & FAILED_TO_OPEN;
+				fifo_fd = open(fifo_name, fifo_flag);
+				if (fifo_fd < 0) {
+					if (fifo_create) unlink_fifo();
+					return FIFO_ERROR | FAILED_TO_OPEN;
+				}
 				issetup = true;
 				return SUCCESS;
 			}
 
 			int write_fifo(const char* buf, size_t size) {
 				if (!issetup)
-					return FIFO_ERROR & NOT_SETUP;
-				if (write(fifo_fd, buf, size) <= 0)
-					return FIFO_ERROR & BAD_WRITE;
+					return FIFO_ERROR | NOT_SETUP;
+				if (write(fifo_fd, buf, size) < 0)
+					return FIFO_ERROR | BAD_WRITE;
 				return SUCCESS;
 			}
 
 			int read_fifo(char* buf, size_t n) {
 				if (!issetup)
-					return FIFO_ERROR & NOT_SETUP;
-				if (read(fifo_fd, buf, n) <= 0)
-					return FIFO_ERROR & BAD_READ;
+					return FIFO_ERROR | NOT_SETUP;
+				if (read(fifo_fd, buf, n) < 0)
+					return FIFO_ERROR | BAD_READ;
 				return SUCCESS;
 			}
 
@@ -61,15 +62,18 @@ namespace pipc {
 			}
 
 			int unlink_fifo() {
-				if (unlink(fname) < 0)
-					return FIFO_ERROR & FAILED_TO_UNLINK;
+				if ((!fifo_create) && (close(fifo_fd) < 0))
+					return FIFO_ERROR | FAILED_TO_CLOSE;
+				if (unlink(fifo_name) < 0)
+					return FIFO_ERROR | FAILED_TO_UNLINK;
 				issetup = false;
 				return SUCCESS;
 			}
 
 			~fifo() {
-				if (!(fifo_fd < 0))
-					close(fifo_fd);
+				close(fifo_fd);
+				unlink(fifo_name);
+				//unlink_fifo();
 			}
 	};
 }

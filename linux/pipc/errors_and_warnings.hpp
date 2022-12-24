@@ -1,7 +1,6 @@
 #ifndef ERROR_WARNING_HEADER
 #define ERROR_WARNING_HEADER
 
-#include <vector>
 #include <string>
 #include <iostream>
 

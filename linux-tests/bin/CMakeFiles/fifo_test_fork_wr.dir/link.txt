@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/fifo_test_fork_wr.dir/fifo/fifo_test_fork_wr.cpp.o  -o fifo_test_fork_wr 
