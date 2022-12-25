@@ -1,20 +1,50 @@
-TESTS=(fifo_test_rw fifo_test_wr fifo_test_wait_rw fifo_test_wait_wr fifo_test_fork_rw fifo_test_fork_wr)
+#!/bin/bash
+echo Creation tests:
+
+fifo_create=./fifo_create
+TESTS=(/tmp/fifo ./fifo /root/fifo)
+EXPECTED=("0" "255" "255")
+
+for i in ${!TESTS[@]}; do
+	CASE=${TESTS[$i]}
+	STRING="Test $i ${TESTS[$i]}"
+	OUT=$($fifo_create $CASE)
+	X=$?
+	if [[ ${EXPECTED[$i]} -ne $X ]] # CASE timed out
+	then echo $STRING - failure
+	else echo $STRING - success
+	fi
+done;
+echo
+rm $fifo_create
+
+echo Communication tests:
+
+TESTS=(fifo_test_fork_rw fifo_test_fork_wr
+		fifo_test_rw fifo_test_wr
+		spare_test_rw spare_test_wr)
+NUMBERS=("0" "0" "0" "0" "" "")
 HELLO="hello world!"
 for i in ${!TESTS[@]}; do
 	TEMPFILE="temp.txt"
 	touch $TEMPFILE
-	COMMAND=${TESTS[$i]}
-	STRING="Test $i : $COMMAND"
-	timeout 3 ./$COMMAND 0 "1>" $TEMPFILE "2>" $TEMPFILE
-	if [[ $? == 124 ]] # command timed out
+	CASE=${TESTS[$i]}
+	STRING="Test $i $CASE"
+	timeout -k 0s 3s ./$CASE ${NUMBERS[$i]} > $TEMPFILE 2> $TEMPFILE
+	if [[ $? == 124 ]] # CASE timed out
 	then echo $STRING timed out!
 	else
-		OUT=$(./$COMMAND 0)
-		echo "out" $OUT
-		if [[ $OUT == $HELLO ]]
+		if [[ $(cat $TEMPFILE) == $HELLO ]] & [[ $? == 0 ]]
 		then echo $STRING - success
 		else 
 			echo $STRING - failure
 		fi
 	fi
+	rm $TEMPFILE
+	rm $CASE
 done;
+rm rw_child
+rm wr_child
+echo
+
+

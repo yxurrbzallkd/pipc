@@ -12,11 +12,12 @@ int main(int argc, char* argv[]) {
 	std::string flag = argv[argc-2];
 	char* file = argv[argc-1];
 	pipc::process p(v);
-	p.set_forward_flag(flag);
-	p.run_exec(0, file, STDERR_FILENO);
-	std::pair<string, string> r = p.run_grab(STDIN_FILENO);
-	std::cout << r.first << " " << r.second << " " << p.get_result() << std::endl;
-	return 0;
+	if (p.set_forward_flag(flag) != SUCCESS)
+		return -1;
+	if (p.forward_stdout(file) != SUCCESS)
+		return -2; 
+	p.run_exec();
+	return p.get_result();
 }
 
 	

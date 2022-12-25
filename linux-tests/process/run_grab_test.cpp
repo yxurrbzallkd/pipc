@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	pipc::process pa("echo hello world!");
+	pipc::process pa("echo hello world");
 	std::cout << pa.run_grab().first << std::endl;
 	return 0;
 }

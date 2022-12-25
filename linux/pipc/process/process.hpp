@@ -1,7 +1,6 @@
 #ifndef PROCESS_HEADER
 #define PROCESS_HEADER
 #include <unistd.h>
-#include <stdio.h>
 #include <fcntl.h>
 #include <iostream>
 #include <sys/wait.h>
@@ -13,8 +12,6 @@
 #include <iterator>
 #include "vector_to_chararr.hpp"
 #include <pipc/errors_and_warnings.hpp>
-#include <typeinfo>   // operator typeid
-#include <bitset>
 
 #define BUF_SIZE 1024
 
@@ -50,17 +47,19 @@ namespace pipc {
 				// was out fd opened with proper flags?
 				// if yes, make a copy of it, for provate use?
 				// could be removed, really...
+				if (out < 0)
+					return INVALID_FD;
 				int fdout = dup(out); // make a private duplicate
 				if (fdout < 0)
-					return FORWARD_ERROR | FAILED_TO_DUP;
+					return FAILED_TO_DUP;
 				if (fcntl(fdout, F_SETFL, W_OK) < 0)
-					return FORWARD_ERROR | INVALID_FD_FLAG; 
+					return INVALID_FLAG; 
 				return fdout;
 			}
 
 			int _forward_open_helper(const char* out, string flag) {
-				int fd = open(out, _string_to_flag(flag));
-				if (fd < 0) return FILE_ERROR | FORWARD_ERROR | FAILED_TO_OPEN;
+				int fd = open(out, _string_to_flag(flag), 0666); // 0666 permissions
+				if (fd < 0) return PROCESS_ERROR | FORWARD_ERROR | fd;
 				return fd;
 			}
 
@@ -70,7 +69,6 @@ namespace pipc {
 				it = std::find(args.begin(), args.end(), s);
 				if (it != args.end()) {
 					if (next(it, 1) != args.end()) {
-						//std::cout << *it << " " << *next(it, 1) << std::endl;
 						wh.first = *it; wh.second = *next(it, 1);
 						args.erase(it+1);
 						res = true;
@@ -103,9 +101,9 @@ namespace pipc {
 			int _string_to_flag(string how) {
 				int flag;
 				if (how == ">>" || how == "1>>" || how == "2>>")
-					flag = O_APPEND | O_CREAT | W_OK;
+					flag = O_APPEND | W_OK;
 				else if ((how == ">") || (how == "1>") || (how == "2>"))
-					flag = O_CREAT | W_OK;
+					flag = O_CREAT | W_OK | R_OK;
 				else
 					flag = R_OK;
 				return flag;
@@ -117,7 +115,7 @@ namespace pipc {
 						return FORWARD_ERROR | FAILED_TO_DUP;
 				if (fd_out != STDOUT_FILENO)
 					if (dup2(fd_out, STDOUT_FILENO) < 0)
-						return FORWARD_ERROR | FAILED_TO_DUP;
+ 						return FORWARD_ERROR | FAILED_TO_DUP;
 				if (fd_err != STDERR_FILENO)
 					if (dup2(fd_err, STDERR_FILENO) < 0)
 						return FORWARD_ERROR | FAILED_TO_DUP;
@@ -172,9 +170,9 @@ namespace pipc {
 				if (pid < 0)
 					return PROCESS_ERROR | FAILED_TO_FORK;
 				else if (pid == 0) {
-					_dup_all();
-					res = execvp(program.c_str(), vector_to_chararr(arguments));
-					exit(res);
+					if (_dup_all() != SUCCESS)
+						return PROCESS_ERROR | FORWARD_ERROR | FAILED_TO_DUP;
+					execvp(program.c_str(), vector_to_chararr(arguments));
 				} else {
 					waitpid(pid, &res, 0);
 				}
@@ -232,7 +230,7 @@ namespace pipc {
 					out_flag = ">";
 				else if (flag == "2>")
 					err_flag = "2>";
-				else if (flag == "1>>")
+				else if (flag == ">>" || flag == "1>>")
 					out_flag = ">>";
 				else if (flag == "&>") {
 					err_flag = "2>"; out_flag = ">";
@@ -251,7 +249,7 @@ namespace pipc {
 				if (fd < 0)
 					return FORWARD_ERROR | FAILED_TO_DUP;
 				if (fcntl(fd, F_SETFL, O_RDONLY) < 0)
-					return FORWARD_ERROR | INVALID_FD_FLAG;
+					return FORWARD_ERROR | INVALID_FLAG;
 				fd_in = fd;
 				return SUCCESS;
 			}
@@ -268,7 +266,7 @@ namespace pipc {
 				if (out != STDOUT_FILENO) {
 					int fdout = _forward_outerr_helper(out, out_flag);
 					if (fdout < 0)
-						return fdout;
+						return PROCESS_ERROR | FORWARD_ERROR;
 					fd_out = fdout;
 				}
 				return SUCCESS;
@@ -278,7 +276,7 @@ namespace pipc {
 				if (out != STDERR_FILENO) {
 					int fdout = _forward_outerr_helper(out, err_flag);
 					if (fdout < 0)
-						return fdout;
+						return PROCESS_ERROR | FORWARD_ERROR;
 					fd_err = fdout;
 				}
 				return SUCCESS;

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <pipc/fifo/fifo.hpp>
 #include <sys/wait.h>
-#include <string>
 
 using namespace std;
 

@@ -27,8 +27,10 @@ namespace pipc {
 					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) < 0)
 						return FIFO_ERROR | FAILED_TO_MKFIFO;
 				} else {
-					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) >= 0)
+					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) >= 0) {
+						unlink(fifo_name);
 						return FIFO_ERROR | FAILED_TO_MKFIFO;
+					}
 				}
 				fifo_fd = open(fifo_name, fifo_flag);
 				if (fifo_fd < 0) {
@@ -72,7 +74,8 @@ namespace pipc {
 
 			~fifo() {
 				close(fifo_fd);
-				unlink(fifo_name);
+				if (fifo_create)
+					unlink(fifo_name);
 				//unlink_fifo();
 			}
 	};
