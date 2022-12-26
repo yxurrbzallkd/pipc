@@ -1,3 +1,5 @@
+#ifndef SHMEM_HEADER
+#define SHMEM_HEADER
 #include <windows.h> 
 #include <stdio.h>
 #include <fcntl.h>
@@ -6,7 +8,6 @@
 #include <algorithm>
 #include <vector>
 #include <sstream>
-#include <system_error>
 #include <tchar.h>
 #include <shlobj.h>
 #include <cstdio>
@@ -46,7 +47,6 @@ namespace pipc {
 										shm_size,
 										shm_name);
 					if (shm_handle == NULL) {
-						std::cout << "failed to create" << std::endl;
 						return SHM_ERROR | FAILED_TO_CREATE_FILE_MAPPING;
 					}
 				} else {
@@ -54,7 +54,7 @@ namespace pipc {
 												FALSE,
 												shm_name);
 				    if (shm_handle == NULL)
-						return SHM_ERROR | FAILED_TO_OPEN_FILE_MAPPING;
+						return SHM_ERROR | FAILED_TO_OPEN_MAPPING;
 				}
 				map = (CHAR*) MapViewOfFile(shm_handle,   // handle to map object
 											   shm_flag, // read/write permission
@@ -92,4 +92,4 @@ namespace pipc {
 	};
 }
 
-
+#endif

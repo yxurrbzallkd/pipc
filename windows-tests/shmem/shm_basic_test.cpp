@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#include "shmem.hpp"
+#include <pipc/shmem/shmem.hpp>
 
 using namespace std;
 

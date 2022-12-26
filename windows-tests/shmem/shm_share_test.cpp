@@ -1,49 +1,44 @@
-#include "fifo.hpp"
+#include <stdio.h>
+#include <iostream>
+#include <pipc/shmem/shmem.hpp>
 
 using namespace std;
 
-CHAR name[] = "\\\\.\\pipe\\Pipe";
-CHAR programPath[] = "./test.exe";
+char shmPath[] = "Local\\ShmObject";
 
-BOOL CreateChildProcess(PROCESS_INFORMATION&, STARTUPINFO&);
+BOOL CreateChildProcess(char* programPath, PROCESS_INFORMATION&, STARTUPINFO&);
 
 int main(int argc, char* argv[]) {
-	
+	char* programPath = argv[0];
 	if (argc == 2) {
 		PROCESS_INFORMATION piProcInfo;
 		STARTUPINFO siStartInfo;
-		ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
-		ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-		siStartInfo.cb = sizeof(STARTUPINFO);
 
-		pipc::fifo pipe(name);
-		if (pipe.setup() != SUCCESS)
+		pipc::shmem s(shmPath, 1024, TRUE, FILE_MAP_READ | FILE_MAP_WRITE);
+		if (s.setup() != SUCCESS)
 			return -1;
-
-		if (!CreateChildProcess(piProcInfo, siStartInfo))
+		if (!CreateChildProcess(programPath, piProcInfo, siStartInfo))
 			return -1;
+		WaitForSingleObject(piProcInfo.hProcess, INFINITE);
 
-		CHAR buf[1024];
-		DWORD dwRead;
-		pipe.read_fifo(buf, 1024, dwRead);
-		buf[dwRead] = '\0';
-		std::cout << buf << std::endl;
+		char content[1025];
+		if (s.read_shm(content, 1024) != SUCCESS)
+			return -1;
+		std::cout << content << std::endl;
 		CloseHandle(piProcInfo.hThread);
 		CloseHandle(piProcInfo.hProcess);
 	} else {
-		// child
-		CHAR* hello = (char*)"hello world!";
-		DWORD dwWritten;
-		pipc::fifo pipe(name, GENERIC_WRITE);
-		if (pipe.setup() != SUCCESS)
+		pipc::shmem s(shmPath, 1024, FALSE, FILE_MAP_WRITE);
+		if (s.setup() != SUCCESS)
 			return -1;
-		pipe.write_fifo(hello, 13, dwWritten);
+		char msg[] = "hello world!";
+		if (s.write_shm(msg, 13) != SUCCESS)
+			return -1;
 	}
 	return 0;
 }
 
-
-BOOL CreateChildProcess(PROCESS_INFORMATION& piProcInfo, STARTUPINFO& siStartInfo) {
+BOOL CreateChildProcess(char* programPath, PROCESS_INFORMATION& piProcInfo, STARTUPINFO& siStartInfo) {
 	ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
 	ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
 	siStartInfo.cb = sizeof(STARTUPINFO);
@@ -59,5 +54,3 @@ BOOL CreateChildProcess(PROCESS_INFORMATION& piProcInfo, STARTUPINFO& siStartInf
 									   &piProcInfo);	// receives PROCESS_INFORMATION
 	return bSuccess;
 }
-
-

@@ -1,3 +1,5 @@
+#ifndef FIFO_HEADER
+#define FIFO_HEADER
 #include <windows.h> 
 #include <stdio.h>
 #include <fcntl.h>
@@ -98,3 +100,4 @@ namespace pipc {
 	};
 }
 
+#endif

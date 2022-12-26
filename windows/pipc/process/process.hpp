@@ -11,8 +11,6 @@
 #include <iterator>
 #include "vector_to_chararr.hpp"
 #include <pipc/errors_and_warnings.hpp>
-#include <typeinfo>   // operator typeid
-#include <bitset>
 #include <system_error>
 #include <tchar.h>
 #include <shlobj.h>
@@ -83,7 +81,6 @@ namespace pipc {
 				DWORD dwError = GetLastError();
 				if (dwError != ERROR_NO_MORE_FILES) 
 				{
-					std::cout << "FindNextFile failed" << std::endl;
 					return false;
 				}
 				FindClose(hFind);
@@ -134,10 +131,9 @@ namespace pipc {
 			HANDLE _forward_open_helper(char* out, string flag) {
 				HANDLE handle;
 				if (_string_to_flag(flag) != FILE_APPEND_DATA) {
-					std::cout << "creating " << out << std::endl;
 					handle = CreateFileA(out,
 										_string_to_flag(flag), 
-										0, 
+										0,
 										NULL, 
 										OPEN_EXISTING,
 										FILE_ATTRIBUTE_NORMAL, 
@@ -145,7 +141,7 @@ namespace pipc {
 					if (handle == INVALID_HANDLE_VALUE) {
 						handle = CreateFileA(out,
 										_string_to_flag(flag), 
-										0, 
+										0,
 										NULL, 
 										CREATE_NEW,
 										FILE_ATTRIBUTE_NORMAL, 
@@ -203,11 +199,9 @@ namespace pipc {
 				if (how == ">>" || how == "1>>" || how == "2>>")
 				{
 					flag = FILE_APPEND_DATA;
-					std::cout << "append" << std::endl;
 			    } else if (how == ">" || how == "1>" || how == "2>")
 				{
 					flag = GENERIC_WRITE;
-					std::cout << "write" << std::endl;
 				}else
 					flag = GENERIC_READ;
 				return flag;
@@ -215,28 +209,28 @@ namespace pipc {
 
 			int _set_all() {
 				if ( ! SetHandleInformation(handle_out, HANDLE_FLAG_INHERIT, 0) )
-					return FORWARD_ERROR | FAILED_SET_HANDLE_INFO;
+					return -1;
 				if ( ! SetHandleInformation(handle_in, HANDLE_FLAG_INHERIT, 0) )
-					return FORWARD_ERROR | FAILED_SET_HANDLE_INFO;
+					return -1;
 				if ( ! SetHandleInformation(handle_err, HANDLE_FLAG_INHERIT, 0) )
-					return FORWARD_ERROR | FAILED_SET_HANDLE_INFO;
+					return -1;
 				ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
 				siStartInfo.cb = sizeof(STARTUPINFO);
 				HANDLE in, out, err;
 				if (!DuplicateHandle( GetCurrentProcess(), handle_out,
 					GetCurrentProcess(), &out, 0, TRUE, DUPLICATE_SAME_ACCESS))
-					return FORWARD_ERROR | FAILED_DUPLICATE_HANDLE;
+					return -1;
 				if (!DuplicateHandle( GetCurrentProcess(), handle_in,
 					GetCurrentProcess(), &in, 0, TRUE, DUPLICATE_SAME_ACCESS))
-					return FORWARD_ERROR | FAILED_DUPLICATE_HANDLE;
+					return -1;
 				if (!DuplicateHandle( GetCurrentProcess(), handle_err,
 					GetCurrentProcess(), &err, 0, TRUE, DUPLICATE_SAME_ACCESS))
-					return FORWARD_ERROR | FAILED_DUPLICATE_HANDLE;
+					return -1;
 				siStartInfo.hStdError = err;
 				siStartInfo.hStdOutput = out;
 				siStartInfo.hStdInput = in;
 				siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
-				return SUCCESS;
+				return 0;
 			}
 
 			void _close_all() {
@@ -249,9 +243,8 @@ namespace pipc {
 				isexec = true;
 				int res;
 				ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
-				int err = _set_all();
-				if (err != SUCCESS)
-					return PROCESS_ERROR | err;
+				if (_set_all() < 0)
+					return -1;
 				
 				string cmd = "";
 				for (int i = 0; i < arguments.size(); i++)
@@ -260,7 +253,7 @@ namespace pipc {
 				// Create the child process. 
 				char programPath[MAX_PATH];
 				if (!findFile((char*)program.c_str(), programPath))
-					return PROCESS_ERROR | FAILED_TO_FIND_FILE;
+					return -1;
 				BOOL bSuccess = CreateProcessA(programPath, 
 											(char*)cmd.c_str(),	// command line
 											NULL,		// process security attributes
@@ -272,12 +265,12 @@ namespace pipc {
 											&siStartInfo,	// STARTUPINFO pointer
 											&piProcInfo);	// receives PROCESS_INFORMATION
 				if (!bSuccess)
-					return PROCESS_ERROR | FAILED_TO_CREATE_PROCESS;
+					return -1;
 				WaitForSingleObject( piProcInfo.hProcess, INFINITE );
 				_close_all();
 				CloseHandle(piProcInfo.hProcess);
       			CloseHandle(piProcInfo.hThread);
-				return SUCCESS;
+				return 0;
 			}
 
 		public:
@@ -321,8 +314,8 @@ namespace pipc {
 				} else if (flag == "&>>") {
 					err_flag = "2>>"; out_flag = ">>";
 				} else
-					return FORWARD_ERROR | BAD_FLAG;
-				return SUCCESS;
+					return -1;
+				return 0;
 			}
 
 			int forward_stdin(HANDLE in) {
@@ -330,12 +323,12 @@ namespace pipc {
 				if (in != GetStdHandle(STD_INPUT_HANDLE)) {
 					DWORD lpdwFlags[100];
 					if (!GetHandleInformation(in, lpdwFlags))
-						return PROCESS_ERROR | FORWARD_ERROR | FAILED_GET_HANDLE_INFO;
+						return error_return("invalid handle");
 					if ((lpdwFlags && GENERIC_READ) == 0)
-						return PROCESS_ERROR | FORWARD_ERROR | BAD_FLAG;
+						return error_return("bad handle flags");
 					handle_in = in;
 				}
-				return SUCCESS;
+				return 0;
 			}
 
 			int forward_stdin(const char* in) {
@@ -348,46 +341,45 @@ namespace pipc {
 											FILE_ATTRIBUTE_READONLY, 
 											NULL);
 				if (handle == INVALID_HANDLE_VALUE)
-					return PROCESS_ERROR | FORWARD_ERROR | FAILED_TO_CREATE_FILE;
+					return error_return("can't CreateFile");
 				handle_in = handle;
-				return SUCCESS;
+				return 0;
 			}
 
 			int forward_stdout(HANDLE out) {
 				if (out != GetStdHandle(STD_OUTPUT_HANDLE)) {
 					HANDLE handleout = _forward_outerr_helper(out, out_flag);
 					if (handleout == INVALID_HANDLE_VALUE)
-						return PROCESS_ERROR | FORWARD_ERROR | BAD_HANDLE;
+						return -1;
 					handle_out = handleout;
 				}
-				return SUCCESS;
+				return 0;
 			}
 
 			int forward_stderr(HANDLE out) {
 				if (out != GetStdHandle(STD_ERROR_HANDLE)) {
 					HANDLE handleout = _forward_outerr_helper(out, err_flag);
 					if (handleout == INVALID_HANDLE_VALUE)
-						return PROCESS_ERROR | FORWARD_ERROR | BAD_HANDLE;
+						return -1;
 					handle_err = handleout;
 				}
-				return SUCCESS;
+				return 0;
 			}
 
 			int forward_stdout(const char* out) {
 				HANDLE handleout = _forward_open_helper((char*)out, out_flag);
 				if (handleout == INVALID_HANDLE_VALUE)
-					return PROCESS_ERROR | FORWARD_ERROR | FAILED_TO_CREATE_FILE;
-				std::cout << "valid handle" << std::endl;
+					return -1;
 				handle_out = handleout;
-				return SUCCESS;
+				return 0;
 			}
 
 			int forward_stderr(const char* out) {
 				HANDLE handleout = _forward_open_helper((char*)out, err_flag);
 				if (handleout == INVALID_HANDLE_VALUE)
-					return PROCESS_ERROR | FORWARD_ERROR | FAILED_TO_CREATE_FILE;
+					return -1;
 				handle_err = handleout;
-				return SUCCESS;
+				return 0;
 			}
 
 			template <typename INPUT, typename OUTPUT, typename ERRPUT>
@@ -453,67 +445,44 @@ namespace pipc {
 			int get_result() { return result; }
 	};
 
-	int pipe_execute(std::initializer_list<process> processes) {
-		if (processes.size() < 2)
-			return error_return("can't connect < 2 processes with pipes");
-
+	int cascade_execute(pipc::process p1, pipc::process p2) {
+		/*
+		made to execute commands like echo bin | cmd.exe /c dir
+		grabs output of 1 process, passes it to the next
+		*/
 		SECURITY_ATTRIBUTES saAttr;
 		// Set the bInheritHandle flag so pipe handles are inherited.
 		saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
 		saAttr.bInheritHandle = TRUE;
 		saAttr.lpSecurityDescriptor = NULL;
 
-		int n = processes.size();
-		HANDLE pipes[n-1][2];
-		for (int i = 0; i < n-1; i++) {
-			// Create a pipe for the child process's STDOUT. 
-			if ( ! CreatePipe(&pipes[i][0], &pipes[i][1], &saAttr, 0) )
-				return error_return("StdoutRd CreatePipe");
-			// Ensure the read handle to the pipe for STDOUT is not inherited.
-			//if ( ! SetHandleInformation(pipes[i][0], HANDLE_FLAG_INHERIT, 0) )
-			//	return error_return("Stdout SetHandleInformation");
-			if ( ! SetHandleInformation(pipes[i][1], HANDLE_FLAG_INHERIT, 0) )
-				return error_return("Stdout SetHandleInformation");
-		}
-				
-		std::vector<process> ps(processes);
-		std::cout << n << std::endl;
+		HANDLE pipe[2];
+		// Create a pipe for the child process's STDOUT. 
+		if ( ! CreatePipe(&pipe[0], &pipe[1], &saAttr, 0) )
+			return error_return("Stdout CreatePipe");
+		// Ensure the read handle to the pipe for STDOUT is not inherited.
+		//if ( ! SetHandleInformation(pipes[i][0], HANDLE_FLAG_INHERIT, 0) )
+		//	return error_return("Stdout SetHandleInformation");
+		if ( ! SetHandleInformation(pipe[1], HANDLE_FLAG_INHERIT, 0) )
+			return error_return("Stdout SetHandleInformation");
+			
 		DWORD dwRead;
 		BOOL bSuccess;
 		CHAR chBuf[BUF_SIZE];
-		ps[0].forward_stdout(pipes[0][1]);
-		ps[0].run_exec();
-		for (int i = 1; i < n-1; i++) {
-			bSuccess = ReadFile( pipes[i-1][0], chBuf, BUF_SIZE, &dwRead, NULL);
-			if (!bSuccess)
-				return -1;
-			chBuf[dwRead] = '\0';
-			process p(ps[i].get_command()+" "+std::string(chBuf));
-			//p.forward_stdin(pipes[i-1][0]);
-			p.forward_stdout(pipes[i][1]);
-			p.run_exec();
-		}
-		std::cout << n-2 << " " << n-1 << std::endl;
-		bSuccess = ReadFile( pipes[n-2][0], chBuf, BUF_SIZE, &dwRead, NULL);
+		p1.forward_stdout(pipe[1]);
+		p1.run_exec();
+		
+		bSuccess = ReadFile( pipe[0], chBuf, BUF_SIZE, &dwRead, NULL);
 		if (!bSuccess)
 			return -1;
-		process p(ps[n-1].get_command()+" "+std::string(chBuf));
-		//p.forward_stdin(pipes[n-2][0]);
+		process p(p2.get_command()+" "+std::string(chBuf));
 		p.run_exec();
 		
-		for (int i = 0; i < n-1; i++) {
-			if (pipes[i][0] != INVALID_HANDLE_VALUE) {
-				std::cout << "not closed read" << std::endl;
-				CloseHandle(pipes[i][0]);
-			}
-			if (pipes[i][1] != INVALID_HANDLE_VALUE) {
-				std::cout << "not closed write" << std::endl;
-				CloseHandle(pipes[i][1]);
-			}
-		}
-		
-		return n;
+		if (pipe[0] != INVALID_HANDLE_VALUE)
+			CloseHandle(pipe[0]);
+		if (pipe[1] != INVALID_HANDLE_VALUE)
+			CloseHandle(pipe[1]);
+		return 0;
 	}
 }
-
 #endif
