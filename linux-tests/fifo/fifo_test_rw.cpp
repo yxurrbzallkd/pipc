@@ -19,17 +19,11 @@ int main(int argc, char* argv[]) {
 		if (pid == 0)
 			execlp(programName, "-", NULL);
 		waitpid(pid, &res, 0);
-		if (res != SUCCESS) {
-			fp.unlink_fifo();
+		if (res != SUCCESS)
 			return res;
-		}
 		char buf[1024];
-		if (fp.read_fifo(buf, 1024) != SUCCESS) {
-			fp.unlink_fifo();
+		if (fp.read_fifo(buf, 1024) != SUCCESS)
 			return -2;
-		}
-		if (fp.unlink_fifo() != SUCCESS) 
-			return -3;
 		std::cout << buf << std::endl;
 		return 0;
 	} else if (argc == 1) {

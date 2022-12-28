@@ -20,8 +20,12 @@ namespace pipc {
 			int buf[BUF_SIZE];
 			bool issetup = false;
 		public:
+			fifo(const char* name, int flag)
+			: fifo_name(name), fifo_flag(flag)
+			{ fifo_create = true; }
 			fifo(const char* name, bool create, int flag)
 			: fifo_name(name), fifo_create(create), fifo_flag(flag) { }
+
 			int setup() {
 				if (fifo_create) {
 					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) < 0)
@@ -32,9 +36,11 @@ namespace pipc {
 						return FIFO_ERROR | FAILED_TO_MKFIFO;
 					}
 				}
+				if (fifo_create)
+					fifo_flag = O_RDWR;
 				fifo_fd = open(fifo_name, fifo_flag);
 				if (fifo_fd < 0) {
-					if (fifo_create) unlink_fifo();
+					if (fifo_create) unlink(fifo_name);
 					return FIFO_ERROR | FAILED_TO_OPEN;
 				}
 				issetup = true;

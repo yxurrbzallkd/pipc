@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <pipc/process/process.hpp>
+#include <pipc/process/pipe.hpp>
 #include <vector>
 #include <string>
 

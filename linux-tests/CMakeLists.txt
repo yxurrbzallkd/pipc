@@ -11,9 +11,7 @@ target_include_directories(${PROJECT_NAME}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
-#set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test)
-set(process_tests file_forward_test)
-
+set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test)
 
 add_executable(hello process/hello.cpp) # used for testing
 target_link_libraries(hello PUBLIC ${PIPC_LIB})

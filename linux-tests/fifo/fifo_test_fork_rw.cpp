@@ -23,11 +23,8 @@ int main(int argc, char* argv[]) {
 	int status;
 	waitpid(pid, &status, 0);
 	char buf[1024];
-	if (fp.read_fifo(buf, 13) != SUCCESS) {
-		fp.unlink_fifo();
+	if (fp.read_fifo(buf, 13) != SUCCESS)
 		return -1;
-	}
-	if (fp.unlink_fifo() != SUCCESS) return -1;
 	std::cout << buf << std::endl;
 	return 0;
 }

@@ -10,18 +10,12 @@
 #include <vector>
 #include <sstream>
 #include <iterator>
-#include "vector_to_chararr.hpp"
+#include "process_helpers.hpp"
 #include <pipc/errors_and_warnings.hpp>
 
 #define BUF_SIZE 1024
 
 using namespace std;
-
-int open_file(string fpath, int flags) {
-	int fd = open(fpath.c_str(), flags);
-	if (fd < 0) return FILE_ERROR | FAILED_TO_OPEN;
-	return fd;
-}
 
 namespace pipc {
 	class process {
@@ -41,26 +35,6 @@ namespace pipc {
 				fd_out = STDOUT_FILENO;
 				fd_err = STDERR_FILENO;
 				out_flag = ">", err_flag = "2>";
-			}
-
-			int _forward_outerr_helper(int out, string flag) {
-				// was out fd opened with proper flags?
-				// if yes, make a copy of it, for provate use?
-				// could be removed, really...
-				if (out < 0)
-					return INVALID_FD;
-				int fdout = dup(out); // make a private duplicate
-				if (fdout < 0)
-					return FAILED_TO_DUP;
-				if (fcntl(fdout, F_SETFL, W_OK) < 0)
-					return INVALID_FLAG; 
-				return fdout;
-			}
-
-			int _forward_open_helper(const char* out, string flag) {
-				int fd = open(out, _string_to_flag(flag), 0666); // 0666 permissions
-				if (fd < 0) return PROCESS_ERROR | FORWARD_ERROR | fd;
-				return fd;
 			}
 
 			bool _forward_parse(string s,
@@ -96,17 +70,6 @@ namespace pipc {
 					forward_stdout(wh.second.c_str());
 					forward_stderr(wh.second.c_str());
 				}
-			}
-
-			int _string_to_flag(string how) {
-				int flag;
-				if (how == ">>" || how == "1>>" || how == "2>>")
-					flag = O_APPEND | W_OK;
-				else if ((how == ">") || (how == "1>") || (how == "2>"))
-					flag = O_CREAT | W_OK | R_OK;
-				else
-					flag = R_OK;
-				return flag;
 			}
 
 			int _dup_all() {
@@ -349,41 +312,6 @@ namespace pipc {
 				return command;
 			}
 	};
-
-	int pipe_execute(std::vector<pipc::process> ps) {
-		if (ps.size() < 2)
-			return ARGUMENT_ERROR;
-
-		int n = ps.size();
-		int pipes[n-1][2];
-		for (int i = 0; i < n-1; i++)
-			if (pipe(pipes[i]) < 0)
-				return PIPE_ERROR | FAILED_TO_PIPE;
-
-		ps[0].forward_stdout(pipes[0][1]);
-		if (ps[0].run_exec() < 0)
-			return PROCESS_ERROR | PROCESS_FAILED;
-		for (int i = 1; i < n-1; i++) {
-			close(pipes[i-1][1]);
-			ps[i].forward_stdin(pipes[i-1][0]);
-			ps[i].forward_stdout(pipes[i][1]);
-			if (ps[i].run_exec() < 0)
-				return PROCESS_ERROR | PROCESS_FAILED;
-			close(pipes[i-1][0]);
-		}
-		// last process - don't forward stdout
-		close(pipes[n-2][1]);
-		ps[n-1].forward_stdin(pipes[n-2][0]);
-		if (ps[n-1].run_exec() < 0)
-			return PROCESS_ERROR | PROCESS_FAILED;
-		close(pipes[n-2][0]);
-		return n;
-	}
-
-	int pipe_execute(std::initializer_list<process> processes) {
-		std::vector<pipc::process> ps(processes);
-		return pipe_execute(ps);
-	}
 }
 
 #endif

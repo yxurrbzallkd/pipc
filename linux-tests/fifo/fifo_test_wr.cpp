@@ -13,22 +13,17 @@ int main(int argc, char* argv[]) {
 		if (fp.setup() != SUCCESS) return -1;
 
 		char hello[13] = "hello world!";
-		if (fp.write_fifo(hello, 13) != SUCCESS) {
-			fp.unlink_fifo();
+		if (fp.write_fifo(hello, 13) != SUCCESS)
 			return -2;
-		}
 		pid_t pid = fork();
-		if (pid < 0) {
-			fp.unlink_fifo();
+		if (pid < 0)
 			return -4;
-		}
 		int res;
 		if (pid == 0) {
 			execlp(program_name, program_name, NULL);
 		} else {
 			waitpid(pid, &res, 0);
 		}
-		if (fp.unlink_fifo() != SUCCESS) return -3;
 		if (res != SUCCESS) return res;
 	} else {
 		pipc::fifo fc(fifo_name, false, O_RDONLY);
