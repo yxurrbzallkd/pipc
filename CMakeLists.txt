@@ -20,6 +20,8 @@ elseif (UNIX AND NOT APPLE)
 	endif()
 	if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Minix")
 		message("Minix Here!")	
+		target_include_directories(${PROJECT_NAME}
+			INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/linux)
 	endif()
 else()
 	message(FATAL_ERROR ${CMAKE_HOST_SYSTEM_NAME} "not supported")

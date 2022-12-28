@@ -5,32 +5,32 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	char* program_name = (char*)"./rw_child";
 	char * fifo_name = (char*)"/tmp/fifo";
+	char* program_name = (char*)"./wr_child";
 	if (argc > 1)
 		fifo_name = argv[1];
 	if (argc > 2)
 		program_name = argv[2];
-	// IMPORTANT!!! Pass O_RDWR else HANGS
 	pipc::fifo fp(fifo_name, true, O_RDWR);
-	if (fp.setup() != SUCCESS)
-		return -1;
+	if (fp.setup() != SUCCESS) return -1;
 
-	int res;
-	pid_t pid = fork();
-	if (pid < 0)
-		return -4;
-	if (pid == 0)
-		execlp(program_name, program_name, NULL);
-
-	waitpid(pid, &res, 0);
-	if (res != SUCCESS)
-		return res;
-
-	char buf[1024];
-	if (fp.read_fifo(buf, 1024) != SUCCESS)
+	char hello[13] = "hello world!";
+	if (fp.write_fifo(hello, 13) != SUCCESS) {
+		fp.unlink_fifo();
 		return -2;
-
-	std::cout << buf << std::endl;
+	}
+	pid_t pid = fork();
+	if (pid < 0) {
+		fp.unlink_fifo();
+		return -4;
+	}
+	int res;
+	if (pid == 0) {
+		execlp(program_name, program_name, NULL);
+	} else {
+		waitpid(pid, &res, 0);
+	}
+	if (fp.unlink_fifo() != SUCCESS) return -3;
+	if (res != SUCCESS) return res;
 	return 0;
 }
