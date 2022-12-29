@@ -1,9 +1,0 @@
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/hello.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/edit_cache.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/basic_process_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/file_forward_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/shm_share_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/conveyor_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/fifo_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/shm_basic_test.dir
-C:/Users/Diana/Documents/OneDrive/OS/project/lib/windows-tests/bin/CMakeFiles/rebuild_cache.dir
