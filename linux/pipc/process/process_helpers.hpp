@@ -1,5 +1,5 @@
-#ifndef VECTOR_TO_CHAR_HEADER
-#define VECTOR_TO_CHAR_HEADER
+#ifndef HELPER_HEADER
+#define HELPER_HEADER
 
 #include <unistd.h>
 #include <fcntl.h>

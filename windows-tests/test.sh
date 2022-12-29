@@ -55,13 +55,15 @@ echo
 
 rm -r hello
 
-if [[ option == "clean" ]]
+if [[ $option == "clean" ]]
 then
-rm fifo_test.exe
-rm shm_basic_test.exe
-rm shm_share_test.exe
-rm basic_process_test.exe
-rm conveyor_test.exe
-rm hello.exe
-rm fifo_test.exe
+rm ./fifo_test.exe
+rm ./shm_basic_test.exe
+rm ./shm_share_test.exe
+rm ./basic_process_test.exe
+rm ./conveyor_test.exe
+rm ./hello.exe
+rm ./fifo_test.exe
+rm ./file_forward_test.exe
+rm -r bin
 fi
