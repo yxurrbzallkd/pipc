@@ -11,7 +11,7 @@ target_include_directories(${PROJECT_NAME}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
-set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test)
+#set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test)
 
 add_executable(hello process/hello.cpp) # used for testing
 target_link_libraries(hello PUBLIC ${PIPC_LIB})
@@ -21,24 +21,25 @@ add_executable(${t} ./process/${t}.cpp)
 target_link_libraries(${t} PUBLIC ${PIPC_LIB})
 endforeach()
 
-set(fifo_tests fifo_test_wr fifo_test_fork_wr 
-				fifo_test_rw fifo_test_fork_rw
-				fifo_create
-				spare_test_wr wr_child
-				spare_test_rw rw_child)
+#set(fifo_tests fifo_test_wr fifo_test_fork_wr  fifo_test_rw fifo_test_fork_rw fifo_create
+#				spare_test_wr wr_child spare_test_rw rw_child)
 
 foreach(t ${fifo_tests})
 add_executable(${t} ./fifo/${t}.cpp)
 target_link_libraries(${t} PUBLIC ${PIPC_LIB})
 endforeach()
 
-set(shmem_tests shmem_test_single
-				shmem_test_rw
-				shmem_test_wr)
+#set(shmem_tests shmem_test_single shmem_test_rw shmem_test_wr)
 
 foreach(t ${shmem_tests})
 add_executable(${t} ./shmem/${t}.cpp)
 target_link_libraries(${t} PUBLIC ${PIPC_LIB} -lrt)
 endforeach()
 
+set(socket_tests basic_test)
+
+foreach(t ${socket_tests})
+add_executable(${t} ./socket/${t}.cpp)
+target_link_libraries(${t} PUBLIC ${PIPC_LIB})
+endforeach()
 	

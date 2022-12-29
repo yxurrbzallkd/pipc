@@ -47,11 +47,29 @@ namespace pipc {
 		if (fd < 0) return PROCESS_ERROR | FORWARD_ERROR | fd;
 		return fd;
     }
+
+    bool _forward_parse(std::string s,
+						std::vector<std::string>& args,
+                        std::pair<std::string, std::string>& wh) {
+		std::vector<std::string>::iterator it;
+        bool res = false;
+		it = std::find(args.begin(), args.end(), s);
+		if (it != args.end()) {
+			if (next(it, 1) != args.end()) {
+				wh.first = *it; wh.second = *next(it, 1);
+				args.erase(it+1);
+				res = true;
+			} else
+				warn(s+" used, file not specified");
+			args.erase(it);
+		}
+		return res;
+	}
 }
 
 int open_file(std::string fpath, int flags) {
 	int fd = open(fpath.c_str(), flags);
-	if (fd < 0) return FILE_ERROR | FAILED_TO_OPEN;
+	if (fd < 0) return FAILED_TO_OPEN;
 	return fd;
 }
 

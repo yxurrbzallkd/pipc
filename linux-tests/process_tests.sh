@@ -1,9 +1,11 @@
 #!/bin/bash
+option=$1
+echo "option" $option
+
 basic_process_test="./basic_process_test"
 piped_process_test="./piped_process_test"
 file_forward_test="./file_forward_test"
 hello="./hello"
-test_programs=(basic_process_test piped_process_test hello)
 
 echo Hello test:
 if [[ $($hello) == $(echo "Hello World!") ]]
@@ -34,7 +36,6 @@ for i in ${!FORWARD_TESTS[@]}; do
 	FULL_OUT="$FULL_OUT"$'\n'
 done;
 rm $FILE
-rm $file_forward_test
 
 echo
 
@@ -50,8 +51,6 @@ for i in ${!TESTS[@]}; do
 		echo $STRING - failure
 	fi
 done;
-
-rm $basic_process_test
 
 echo
 
@@ -77,7 +76,6 @@ else
 	echo "cat hello.txt | wc" - failure
 fi
 echo
-rm $piped_process_test
 
 echo Run-grab test:
 run_grab_test="./run_grab_test"
@@ -86,6 +84,13 @@ then echo success
 else echo failure
 fi
 echo
-rm $run_grab_test
 
 sudo rm -r "test"
+
+if [[ $option == "clean" ]]
+then
+rm $file_forward_test
+rm $basic_process_test
+rm $piped_process_test
+rm $run_grab_test
+fi

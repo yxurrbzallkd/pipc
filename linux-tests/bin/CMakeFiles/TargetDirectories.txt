@@ -1,0 +1,4 @@
+/mnt/c/Users/Diana/Documents/OneDrive/OS/project/lib/linux-tests/bin/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Diana/Documents/OneDrive/OS/project/lib/linux-tests/bin/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Diana/Documents/OneDrive/OS/project/lib/linux-tests/bin/CMakeFiles/basic_test.dir
+/mnt/c/Users/Diana/Documents/OneDrive/OS/project/lib/linux-tests/bin/CMakeFiles/hello.dir

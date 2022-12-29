@@ -3,32 +3,56 @@
 
 #include <string>
 #include <iostream>
+#include <math.h>
 
-#define PROCESS_ERROR     -2 // 2*1
-#define FILE_ERROR        -4 // 2**2
-#define PIPE_ERROR        -8 // ...
-#define FORWARD_ERROR    -16
-#define ARGUMENT_ERROR   -32
-#define PROCESS_FAILED   -64
-#define FAILED_TO_FORK  -128
-#define FAILED_TO_OPEN  -256
-#define INVALID_FD      -512
-#define INVALID_FLAG   -1024
-#define FAILED_TO_PIPE -2048
-#define FAILED_TO_DUP  -4096
-#define FAILED_TO_CLOSE -8192
+#define ARGUMENT_ERROR -(int)pow(2, 30)
 
-#define NOT_SETUP           -16384 // 2**14
-#define FAILED_TO_UNLINK    -23768 // 2**15
-#define FIFO_ERROR          -65536 // ...
-#define FAILED_TO_MKFIFO   -131072
-#define SHM_ERROR          -262144
-#define FAILED_TO_MMAP     -524288
-#define FAILED_TO_MUNMAP   -104856
-#define FAILED_TO_FTRUNCATE -2097152 
-#define OUT_OF_BOUNDS       -4194304
-#define BAD_WRITE           -8388608
-#define BAD_READ           -16777216
+#define PROCESS_ERROR  -(int)pow(2, 29)
+
+#define FIFO_ERROR     -(int)pow(2, 28)
+
+#define SHM_ERROR      -(int)pow(2, 27)
+
+#define NOT_SETUP      -(int)pow(2, 26) // 2**14
+
+#define PIPE_ERROR     -(int)pow(2, 25)
+#define FAILED_TO_PIPE -(int)pow(2, 24)
+
+#define FORWARD_ERROR    -(int)pow(2, 23)
+#define PROCESS_FAILED   -(int)pow(2, 22)
+
+#define FAILED_TO_FORK  -(int)pow(2, 21)
+
+#define FAILED_TO_OPEN  -(int)pow(2, 20)
+#define FAILED_TO_CLOSE -(int)pow(2, 19)
+
+#define INVALID_FD      -(int)pow(2, 18)
+#define INVALID_FLAG    -(int)pow(2, 17)
+
+#define FAILED_TO_DUP  -(int)pow(2, 16)
+
+#define FAILED_TO_UNLINK    -(int)pow(2, 15)
+
+#define FAILED_TO_MKFIFO   -(int)pow(2, 14)
+
+#define FAILED_TO_MMAP      -(int)pow(2, 15)
+#define FAILED_TO_MUNMAP    -(int)pow(2, 14)
+#define FAILED_TO_FTRUNCATE -(int)pow(2, 13)
+
+#define OUT_OF_BOUNDS       -(int)pow(2, 12)
+
+#define BAD_WRITE           -(int)pow(2, 11)
+#define BAD_READ            -(int)pow(2, 10)
+
+#define SOCKET_ERROR          -(int)pow(2, 9)
+#define FAILED_TO_SETSOCKOPT  -(int)pow(2, 8)
+#define FAILED_TO_BIND        -(int)pow(2, 7)
+#define FAILED_TO_LISTEN      -(int)pow(2, 6)
+#define FAILED_TO_ACCEPT      -(int)pow(2, 5)
+#define FAILED_TO_SEND        -(int)pow(2, 4)
+#define BAD_ADDRESS           -(int)pow(2, 3)
+#define FAILED_TO_CONNECT     -(int)pow(2, 2)
+#define BUSY                  -(int)pow(2, 1)
 
 #define SUCCESS 0
 

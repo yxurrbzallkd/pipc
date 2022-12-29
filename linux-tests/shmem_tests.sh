@@ -1,4 +1,7 @@
 #!/bin/bash
+option=$1
+echo "option" $option
+
 echo Tests:
 
 HELLO="hello world!"
@@ -11,6 +14,13 @@ for i in ${!TESTS[@]}; do
 	else 
 		echo $STRING - failure
 	fi
-	rm $CASE
 done;
 echo
+
+if [[ $option == "clean" ]]
+then
+for i in ${!TESTS[@]};
+do
+rm ${TESTS[$i]}
+done
+fi

@@ -1,4 +1,8 @@
 #!/bin/bash
+option=$1
+
+echo "option" $option
+
 echo Creation tests:
 
 fifo_create=./fifo_create
@@ -41,10 +45,18 @@ for i in ${!TESTS[@]}; do
 		fi
 	fi
 	rm $TEMPFILE
-	rm $CASE
+done;
+
+echo
+
+if [[ $option == "clean" ]]
+then
+for i in ${!TESTS[@]};
+do
+	rm ${TESTS[$i]}
 done;
 rm rw_child
 rm wr_child
-echo
+fi
 
 

@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/wr_child.dir/fifo/wr_child.cpp.o  -o ../wr_child 
