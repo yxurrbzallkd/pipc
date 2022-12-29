@@ -22,15 +22,14 @@ namespace pipc {
 		protected:
 			string program;
 			vector<string> arguments;
-			vector<string>::iterator it; // for reuse
-			std::pair<string, string> wh; // for reuse
 			int fd_in, fd_out, fd_err;
 			string out_flag, err_flag;
 			bool isexec = false;
 			int result;
-			char buf[BUF_SIZE+1];
+			char buf[BUF_SIZE+1]; // for reuse
 
 			void _reset_fds_flags() {
+				// restore default values
 				fd_in = STDIN_FILENO;
 				fd_out = STDOUT_FILENO;
 				fd_err = STDERR_FILENO;
@@ -38,6 +37,10 @@ namespace pipc {
 			}
 
 			void _parse_command(vector<string> args) {
+				/*
+				looks for forwarding symbols and respective files
+				cuts them out, forwards stdin\out\err
+				*/
 				pair<string, string> wh;
 				for (string s : {">", "1>", ">>", "1>>"})
 					if (_forward_parse(s, args, wh))
@@ -58,6 +61,7 @@ namespace pipc {
 			}
 
 			int _dup_all() {
+				/* replaces stdin\out\err with forwarding fd's */
 				if (fd_in != STDIN_FILENO)
 					if (dup2(fd_in, STDIN_FILENO) < 0)
 						return FORWARD_ERROR | FAILED_TO_DUP;
@@ -71,6 +75,7 @@ namespace pipc {
 			}
 
 			void _close_all() {
+				// closes fd's if not standard used
 				if (fd_in != STDIN_FILENO)
 					close(fd_in);
 				if (fd_out != STDOUT_FILENO)
@@ -80,6 +85,7 @@ namespace pipc {
 			}
 
 			string reader(int fd) {
+				// reads from fd and combines into string
 				string output = "";
 				int r = BUF_SIZE;
 				while (r == BUF_SIZE) {
@@ -160,6 +166,7 @@ namespace pipc {
 			}
 
 			int forward_stdout(int out) {
+				// provide fd
 				if (out != STDOUT_FILENO) {
 					int fdout = _forward_outerr_helper(out, out_flag);
 					if (fdout < 0)
@@ -170,6 +177,7 @@ namespace pipc {
 			}
 
 			int forward_stderr(int out) {
+				// provide fd
 				if (out != STDERR_FILENO) {
 					int fdout = _forward_outerr_helper(out, err_flag);
 					if (fdout < 0)
@@ -180,6 +188,7 @@ namespace pipc {
 			}
 
 			int forward_stdout(const char* out) {
+				// provide filename
 				int fdout = _forward_open_helper(out, out_flag);
 				if (fdout < 0)
 					return fdout;
@@ -188,6 +197,7 @@ namespace pipc {
 			}
 
 			int forward_stderr(const char* out) {
+				// provide filename
 				int fdout = _forward_open_helper(out, err_flag);
 				if (fdout < 0)
 					return fdout;
@@ -195,20 +205,28 @@ namespace pipc {
 				return SUCCESS;
 			}
 
-			std::vector<string> get_args()
-			{ return arguments; }
+			std::vector<string> get_args() {
+				// return argument
+				return arguments;
+			}
 
-			~basic_process()
-			{ _close_all(); /* close all fds */ }
-
-			int get_result() { return result; }
+			int get_result() {
+				// return result of execution
+				if (!isexec)
+					return PROCESS_ERROR;
+				return result;
+			}
 
 			std::string get_command() {
+				// returns command
 				std::string command = "";
 				for (std::string s : arguments)
 					command += s + " ";
 				return command;
 			}
+			
+			~basic_process()
+			{ _close_all(); /* close all fds */ }
 	};
 }
 

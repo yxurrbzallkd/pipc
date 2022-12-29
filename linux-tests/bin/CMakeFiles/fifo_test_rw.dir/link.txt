@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/fifo_test_rw.dir/fifo/fifo_test_rw.cpp.o  -o ../fifo_test_rw 

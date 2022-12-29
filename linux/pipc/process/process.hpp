@@ -22,6 +22,13 @@ namespace pipc {
 	class process : public basic_process {
 		private:
 			int _grab_execute(std::pair<string, string>& res) {
+				/*
+				creates 2 pipes for stdout and stderr
+				forks
+				dup2's child's stdout\err to reading ends of pipes
+				reads from pipes in parent
+				stores read from stdout and stderr in res.first and res.second respectively
+				*/
 				isexec = true;
 				int r;
 				int pipefd_out[2];
@@ -55,6 +62,13 @@ namespace pipc {
 			}
 
 			int _execute() {
+				/*
+				forks
+				dup2's stdin/out/err
+				calls execvp
+				waits in parent
+				returns error code
+				*/
 				int res;
 				pid_t pid = fork();
 				if (pid < 0)
@@ -77,6 +91,11 @@ namespace pipc {
 
 			template <typename IN, typename OUT, typename ERR>
 			int run_exec(IN in, OUT out, ERR err) {
+				/*
+				run the proces
+				accepts fd's and filenames
+				pass standard if don't want to forward
+				*/
 				result = forward_stdin(in);
 				if (result < 0) return result;
 				result = forward_stdout(out);
@@ -88,11 +107,16 @@ namespace pipc {
 			}
 
 			int run_exec() {
+				// without arguments
 				result = _execute();
 				return result;
 			}
 
 			std::pair<string, string> run_grab() {
+				/*
+				grabs stdout and stderr
+				stores stdout in pair's first, stderr in second
+				*/
 				std::pair<string, string> res;
 				result = _grab_execute(res);
 				if (result < 0)

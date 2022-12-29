@@ -12,7 +12,9 @@
 
 namespace pipc {
 	int pipe_execute(std::vector<pipc::process> ps) {
-		if (ps.size() < 2)
+		// conveyor
+		// !!! blocks if writes more than size of pipe
+		if (ps.size() < 2) // at least 2 processes
 			return ARGUMENT_ERROR;
 
 		int n = ps.size();

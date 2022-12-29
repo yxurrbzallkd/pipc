@@ -20,7 +20,6 @@ for i in ${!TESTS[@]}; do
 	fi
 done;
 echo
-rm $fifo_create
 
 echo Communication tests:
 
@@ -34,7 +33,7 @@ for i in ${!TESTS[@]}; do
 	touch $TEMPFILE
 	CASE=${TESTS[$i]}
 	STRING="Test $i $CASE"
-	timeout -k 0s 3s ./$CASE ${NUMBERS[$i]} > $TEMPFILE 2> $TEMPFILE
+	timeout -k 0s 3s ./$CASE > $TEMPFILE 2> $TEMPFILE
 	if [[ $? == 124 ]] # CASE timed out
 	then echo $STRING timed out!
 	else
@@ -57,6 +56,7 @@ do
 done;
 rm rw_child
 rm wr_child
+rm $fifo_create
 fi
 
 

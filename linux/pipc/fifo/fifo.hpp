@@ -20,11 +20,10 @@ namespace pipc {
 			int buf[BUF_SIZE];
 			bool issetup = false;
 		public:
-			fifo(const char* name, int flag)
-			: fifo_name(name), fifo_flag(flag)
+			fifo(const char* name, int flag) : fifo_name(name), fifo_flag(flag)
 			{ fifo_create = true; }
-			fifo(const char* name, bool create, int flag)
-			: fifo_name(name), fifo_create(create), fifo_flag(flag) { }
+			fifo(const char* name, bool create, int flag) : fifo_name(name), fifo_create(create), fifo_flag(flag)
+			{ }
 
 			int setup() {
 				if (fifo_create) {

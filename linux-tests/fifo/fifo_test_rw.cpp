@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	char* programName = argv[0];
 	char * fifo_name = (char*)"/tmp/fifo";
-	if (argc == 2) {
+	if (argc == 1) {
 		// IMPORTANT!!! Pass O_RDWR else HANGS
 		pipc::fifo fp(fifo_name, true, O_RDWR);
 		if (fp.setup() != SUCCESS)
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 		if (pid < 0)
 			return -4;
 		if (pid == 0)
-			execlp(programName, "-", NULL);
+			execlp(programName, programName, "", NULL);
 		waitpid(pid, &res, 0);
 		if (res != SUCCESS)
 			return res;
@@ -26,7 +26,8 @@ int main(int argc, char* argv[]) {
 			return -2;
 		std::cout << buf << std::endl;
 		return 0;
-	} else if (argc == 1) {
+	} else {
+		fifo_name = argv[1];
 		pipc::fifo fc(fifo_name, false, O_WRONLY);
 		if (fc.setup() != SUCCESS)
 			exit(-1);

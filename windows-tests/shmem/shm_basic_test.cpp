@@ -6,7 +6,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	std::cout << "creating a shm" << std::endl;
-	pipc::shmem s("Local\\ShmObject", 1024, TRUE, FILE_MAP_READ | FILE_MAP_WRITE);
+	pipc::shmem s((char*)"Local\\ShmObject", 1024, TRUE, FILE_MAP_READ | FILE_MAP_WRITE);
 	if (s.setup() != SUCCESS)
 		return -1;
 	char msg[] = "hello world!";

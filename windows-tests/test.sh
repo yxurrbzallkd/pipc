@@ -1,3 +1,6 @@
+#/bin/bash
+option=$1 # if clean - delete exes
+
 mkdir bin
 cd bin
 cmake .. -G"Unix Makefiles"
@@ -48,3 +51,15 @@ echo
 echo Basic fifo test hello world:
 ./fifo_test.exe hello
 echo
+
+if [[ option == "clean" ]]
+then
+rm fifo_test.exe
+rm shm_basic_test.exe
+rm shm_share_test.exe
+rm basic_process_test.exe
+rm conveyor_test.exe
+rm hello.exe
+rm fifo_test.exe
+fi
+
