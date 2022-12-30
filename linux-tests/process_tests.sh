@@ -85,7 +85,7 @@ else echo failure
 fi
 echo
 
-sudo rm -r "test"
+rm -r "test"
 
 if [[ $option == "clean" ]]
 then

@@ -16,8 +16,8 @@ done
 if [[ $compile == "compile" ]]
 then
 echo Compiling
-mkdir hello
-cd hello
+mkdir bin
+cd bin
 cmake .. -G"Unix Makefiles"
 make
 cd ..

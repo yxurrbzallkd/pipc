@@ -9,7 +9,12 @@ use ``` -G "Unix Makefiles"``` on Windows
 
 cd windows-tests or linux-tests
 
-```./test.sh```
+```./all_tests.sh [compile] [clean]``` - linux
+
+```./test.sh [compile] [clean]``` - windows
+
+if compile - compiles, if clean - deleted executables and bin dir
+
 
 ## Usage
 
