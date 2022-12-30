@@ -3,6 +3,9 @@
 
 int main(int argc, char* argv[]) {
 	pipc::background_process b1("./infinite");
+	std::cout << b1.is_launched();
+	std::cout << b1.is_running();
+	std::cout << std::endl;
 	b1.launch();
 	std::cout << b1.is_launched();
 	std::cout << b1.is_running();
@@ -12,6 +15,8 @@ int main(int argc, char* argv[]) {
 	std::cout << b1.is_launched();
 	std::cout << b1.is_running();
 	std::cout << b1.is_finished();
+	b1.wait_for();
+	b1.wait_for();
 	std::cout << "|";
 	pipc::background_process b2("./hello");
 	b2.launch();

@@ -1,11 +1,27 @@
-!/bin/bash
-echo Compiling tests:
-mkdir bin
-cd bin
-cmake ..
+#!/bin/bash
+option=""
+compile="no"
+for var in "$@"
+do
+if [[ $var == "clean" ]]
+then
+option=$var
+fi
+if [[ $var == "compile" ]]
+then
+compile=$var
+fi
+done
+
+if [[ $compile == "compile" ]]
+then
+echo Compiling
+mkdir hello
+cd hello
+cmake .. -G"Unix Makefiles"
 make
 cd ..
-echo
+fi
 
 option=$1
 echo "option" $option

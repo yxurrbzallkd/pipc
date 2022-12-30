@@ -1,55 +1,97 @@
 #/usr/hello/bash
-option=$1 # if clean - delete exes
+option="" # if clean - delete exes
+compile="no"
+for var in "$@"
+do
+if [[ $var == "clean" ]]
+then
+option=$var
+fi
+if [[ $var == "compile" ]]
+then
+compile=$var
+fi
+done
 
-#mkdir hello
-#cd hello
-#cmake .. -G"Unix Makefiles"
-#make
-#cd ..
+if [[ $compile == "compile" ]]
+then
+echo Compiling
+mkdir hello
+cd hello
+cmake .. -G"Unix Makefiles"
+make
+cd ..
+fi
 
 echo Running tests:
 
-echo doing hello
-./hello.exe
+echo Hello test:
+OUT=$(./hello.exe)
+if [[ $OUT == "hello" ]] && [[ $? == 0 ]]
+then
+echo "success"
+else
+echo "failure"
+fi
 echo
 
-echo "doing echo hello from cmd"
-./basic_process_test.exe "cmd.exe" "\\/c" "echo" hello
+echo "Doing echo hello from cmd:"
+OUT=$(./basic_process_test.exe "cmd.exe" "\\/c" "echo" hello)
+if [[ $OUT == "hello" ]] && [[ $? == 0 ]]
+then
+echo "success"
+else
+echo "failure"
+fi
 echo
 
-echo "doing echo hello from powershell"
-./basic_process_test.exe "powershell.exe" "echo" hello
+echo "Doing echo hello from powershell:"
+OUT=$(./basic_process_test.exe "powershell.exe" "echo" hello)
+if [[ $OUT == "hello" ]] && [[ $? == 0 ]]
+then
+echo "success"
+else
+echo "failure"
+fi
 echo
 
-mkdir hello
-echo hello > ./hello/file.txt
+
+echo "conveyor test echo ../ | dir"
 ./conveyor_test.exe
 echo
 
 #!! doesn't work
-echo "doing dir hello" 
-./basic_process_test.exe "cmd.exe" "\\/c" "dir" "hello"
+echo "doing dir ../../" 
+OUT=$(./basic_process_test.exe "cmd.exe" "\\/c" "dir" "..\\..\\")
 echo
 
-echo doing ls hello
+echo "Creating a test directory hello:"
+mkdir hello
+echo hello > ./hello/file.txt
+
+echo "Doing ls hello:"
 ./basic_process_test.exe "powershell.exe" "ls" "hello"
 echo
 
-echo hello > file.txt
-echo doing cat a file with hello
-./basic_process_test.exe "powershell.exe" "cat" "file.txt"
-rm file.txt
+echo "Doing cat a file with hello:"
+OUT=$(./basic_process_test.exe "powershell.exe" "cat" "hello/file.txt")
+if [[ $OUT == "hello" ]] && [[ $? == 0 ]]
+then
+echo "success"
+else
+echo "failure"
+fi
 echo
 
-echo Basic shm test - expect to see read hello world and wrote hello world:
+echo "Basic shm test - expect to see read hello world and wrote hello world:"
 ./shm_basic_test.exe
 echo
 
-echo Complicated shm test expect hello:
+echo "Complicated shm test expect hello:"
 ./shm_share_test.exe 0
 echo
 
-echo Basic fifo test hello world:
+echo "Basic fifo test hello world:"
 ./fifo_test.exe hello
 echo
 

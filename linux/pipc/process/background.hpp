@@ -31,13 +31,15 @@ namespace pipc {
 				if (pid == 0) {
 					if (_dup_all() != SUCCESS)
 						return PROCESS_ERROR | FORWARD_ERROR | FAILED_TO_DUP;
+					std::cout << program << std::endl;
 					execvp(program.c_str(), vector_to_chararr(arguments));
-					exit(result);
+					return result;
 				} else {
-					isrunning = true;
-					return SUCCESS;
+					std::cout << "forked " << pid << std::endl;
 				}
-				exit(0);
+				isrunning = true;
+				std::cout << "running now " << get_command() << std::endl;
+				return SUCCESS;
 			}
 
 		public:
@@ -51,7 +53,7 @@ namespace pipc {
 				if (result < 0) return result;
 				result = forward_stderr(err);
 				if (result < 0) return result;
-				return _launch();;
+				return _launch();
 			}
 
 			int launch() {

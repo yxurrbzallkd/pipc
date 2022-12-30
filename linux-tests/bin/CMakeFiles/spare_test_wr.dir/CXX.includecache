@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../../linux/pipc/errors_and_warnings.hpp
+string
+-
+iostream
+-
+math.h
+-
+
+../../linux/pipc/fifo/fifo.hpp
+iostream
+-
+sys/mman.h
+-
+sys/stat.h
+-
+unistd.h
+-
+fcntl.h
+-
+pipc/errors_and_warnings.hpp
+-
+
+/mnt/c/Users/Diana/Documents/OneDrive/OS/project/lib/linux-tests/fifo/spare_test_wr.cpp
+iostream
+-
+pipc/fifo/fifo.hpp
+-
+sys/wait.h
+-
+

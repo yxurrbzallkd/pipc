@@ -412,3 +412,42 @@ namespace pipc {
 }
 ```
 
+*signal in socket*
+
+```c++
+        int run_read_write(int (*func)(char*, char*)) {
+            // ...
+            pid = fork();
+			// ...
+            struct sigaction ccatch;
+            sigemptyset(&ccatch.sa_mask);   /* ccatch for catching signal from parent */
+            ccatch.sa_flags = 0;
+            ccatch.sa_handler = sighandler;
+            sigaction(SIGUSR1, &ccatch, NULL); /* catch signal from parent for child */
+           
+            isrunning = true;
+            if (pid == 0) {
+				/...
+                while (isrunning) {
+                    // accept(sfd, (struct sockaddr*)&serv_info, (socklen_t*)&addrlen);
+                    // int r = read(cfd, inbuf, MESSAGE_BUF_SIZE);
+                    // func(inbuf, outbuf);
+                    // write(cfd, outbuf, MESSAGE_BUF_SIZE)
+                    // close(cfd);
+                    }
+                }
+            }
+            return SUCCESS;
+        }
+
+        int interrupt() {
+            if (!issetup)
+                return SOCKET_ERROR | NOT_SETUP;
+            if (!isrunning)
+                return SUCCESS;
+            kill(pid, SIGUSR1);
+            isrunning = false;
+            return SUCCESS;
+        }
+```
+

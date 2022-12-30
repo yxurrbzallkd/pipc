@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/spare_test_wr.dir/fifo/spare_test_wr.cpp.o  -o ../spare_test_wr 
