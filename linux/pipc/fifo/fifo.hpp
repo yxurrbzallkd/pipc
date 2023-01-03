@@ -8,7 +8,11 @@
 #include <fcntl.h>
 #include <pipc/errors_and_warnings.hpp>
 
-#define BUF_SIZE 1024
+#define FIFO_BUF_SIZE 1024
+
+#define FF_RDWR O_RDWR
+#define FF_RD O_RDONLY
+#define FF_WR O_WRONLY
 
 namespace pipc {
 	class fifo {
@@ -17,7 +21,7 @@ namespace pipc {
 			bool fifo_create;
 			int fifo_flag;
 			int fifo_fd;
-			int buf[BUF_SIZE];
+			int buf[FIFO_BUF_SIZE];
 			bool issetup = false;
 		public:
 			fifo(const char* name, int flag) : fifo_name(name), fifo_flag(flag)
@@ -26,6 +30,10 @@ namespace pipc {
 			{ }
 
 			int setup() {
+				if ((fifo_flag != FF_RDWR) &&
+					(fifo_flag != FF_RD) &&
+					(fifo_flag != FF_WR))
+					return INVALID_FLAG;
 				if (fifo_create) {
 					if (mkfifo(fifo_name, S_IRUSR|S_IWUSR) < 0)
 						return FIFO_ERROR | FAILED_TO_MKFIFO;
@@ -36,7 +44,7 @@ namespace pipc {
 					}
 				}
 				if (fifo_create)
-					fifo_flag = O_RDWR;
+					fifo_flag = FF_RDWR;
 				fifo_fd = open(fifo_name, fifo_flag);
 				if (fifo_fd < 0) {
 					if (fifo_create) unlink(fifo_name);
@@ -64,7 +72,7 @@ namespace pipc {
 
 			int clear_fifo() {
 				// read everything from the pipe, clearing it
-				while (read(fifo_fd, buf, BUF_SIZE) > 0) {}
+				while (read(fifo_fd, buf, FIFO_BUF_SIZE) > 0) {}
 				return SUCCESS;
 			}
 

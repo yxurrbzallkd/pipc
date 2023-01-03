@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	char fifo_name[] = "/tmp/fifo";
 	// IMPORTANT!!! Pass O_RDWR, otherwise HANGS
-	pipc::fifo fp(fifo_name, true, O_RDWR);
+	pipc::fifo fp(fifo_name, true, FF_RDWR);
 	if (fp.setup() != SUCCESS) {
 		std::cerr << "failed setup" << std::endl;
 		return -1;
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 	if (pid == 0) {
-		pipc::fifo fc(fifo_name, false, O_RDONLY);
+		pipc::fifo fc(fifo_name, false, FF_RD);
 		if (fc.setup() != SUCCESS) {
 			std::cerr << "failed setup" << std::endl;
 			exit(-1);

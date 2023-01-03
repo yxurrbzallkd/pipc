@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	char * fifo_name = (char*)"/tmp/fifo";
 	if (argc == 1) {
 		// IMPORTANT!!! Pass O_RDWR else HANGS
-		pipc::fifo fp(fifo_name, true, O_RDWR);
+		pipc::fifo fp(fifo_name, true, FF_RDWR);
 		if (fp.setup() != SUCCESS)
 			return -1;
 		int res;
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	} else {
 		fifo_name = argv[1];
-		pipc::fifo fc(fifo_name, false, O_WRONLY);
+		pipc::fifo fc(fifo_name, false, FF_WR);
 		if (fc.setup() != SUCCESS)
 			exit(-1);
 		char hello[] = "hello world!";

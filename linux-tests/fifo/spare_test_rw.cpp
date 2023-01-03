@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
 	if (argc > 2)
 		program_name = argv[2];
 	// IMPORTANT!!! Pass O_RDWR else HANGS
-	pipc::fifo fp(fifo_name, true, O_RDWR);
+	pipc::fifo fp(fifo_name, true, FF_RDWR);
 	if (fp.setup() != SUCCESS)
 		return -1;
 

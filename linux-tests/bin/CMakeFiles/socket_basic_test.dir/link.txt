@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/socket_basic_test.dir/socket/socket_basic_test.cpp.o  -o ../socket_basic_test 

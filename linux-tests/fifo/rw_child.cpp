@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 	char * fifo_name = (char*)"/tmp/fifo";
 	if (argc > 1)
 		fifo_name = argv[1];
-	pipc::fifo fc(fifo_name, false, O_WRONLY);
+	pipc::fifo fc(fifo_name, false, FF_WR);
 	if (fc.setup() != SUCCESS)
 		exit(-1);
 	char hello[] = "hello world!";

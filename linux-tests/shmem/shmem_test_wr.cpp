@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 		char* program_name = argv[0];
 		char shm_name[] = "/shm_object";
 		// IMPORTANT!!! Pass O_RDWR else HANGS
-		pipc::shmem sp(shm_name, BUF_SIZE, O_WRONLY, PROT_WRITE);
+		pipc::shmem sp(shm_name, BUF_SIZE, SF_WR, MF_WR);
 		if (sp.setup() != SUCCESS)
 			return -1;
 
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 			return res;
 	} else if (argc == 2) {
 		char* shm_name = argv[1];
-		pipc::shmem sc(shm_name, O_RDONLY, PROT_READ);
+		pipc::shmem sc(shm_name, SF_RD, MF_RD);
 		if (sc.setup() != SUCCESS)
 			exit(-1);
 		char buf[BUF_SIZE];

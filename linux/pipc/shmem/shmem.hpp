@@ -9,49 +9,63 @@
 #include <fcntl.h>
 #include <string.h>
 #include <pipc/errors_and_warnings.hpp>
+#include <bitset>
+
+#define SF_RDWR S_IRUSR | S_IWUSR
+#define SF_RD S_IRUSR
+#define SF_WR S_IWUSR
+
+#define MF_RD PROT_READ
+#define MF_WR PROT_WRITE
+#define MF_RDWR PROT_READ | PROT_WRITE
 
 namespace pipc {
 	class shmem {
 		private:
 			char* shm_name;
 			int sfd;
-			int shm_mode, map_flag;
+			int shm_flag, map_flag;
 			char* map;
 			size_t file_size;
 			bool shm_create;
 			bool issetup = false;
 		public:
 			shmem(char* name, size_t size, int sflag, int mflag)
-			: shm_name(name), shm_mode(sflag), file_size(size), map_flag(mflag)
+			: shm_name(name), shm_flag(sflag), file_size(size), map_flag(mflag)
 			{ shm_create = true; }
 
 			shmem(char* name, int sflag, int mflag)
-			: shm_name(name), shm_mode(sflag), map_flag(mflag)
+			: shm_name(name), shm_flag(sflag), map_flag(mflag)
 			{ shm_create = false; }
 
 
 			int setup() {
-				int flag = 0;
-				if (shm_mode == O_RDWR)
-					flag = S_IRUSR | S_IWUSR;
-				else if (shm_mode == O_RDONLY)
-					flag = S_IRUSR;
-				else if (shm_mode == O_WRONLY)
-					flag = S_IWUSR;
-				else
+				if (!(shm_flag == SF_RDWR) &&
+					!(shm_flag == SF_RD) &&
+					!(shm_flag == SF_WR))
 					return SHM_ERROR | INVALID_FLAG;
+
+				if (!(map_flag == MF_RD) &&
+					!(map_flag == MF_WR) &&
+					!(map_flag == MF_RDWR))
+					return SHM_ERROR | INVALID_FLAG;
+
 				unlink(shm_name);
-				shm_mode = flag;
 				if (shm_create)
-					sfd = sfd = shm_open(shm_name, O_CREAT | O_RDWR, shm_mode);
+					sfd = shm_open(shm_name, O_CREAT | O_RDWR, shm_flag);
 				else
-					sfd = shm_open(shm_name, O_RDWR, shm_mode);
-				if (sfd < 0)
+					sfd = shm_open(shm_name, O_RDWR, shm_flag);
+				
+				if (sfd < 0) {
+					std::cout << "failed to open" << std::endl;
 					return SHM_ERROR | FAILED_TO_OPEN;
+				}
 				
 				if (shm_create) {
-					if (ftruncate(sfd, file_size) < 0)
+					if (ftruncate(sfd, file_size) < 0) {
+						std::cout << "failed to ftruncate" << std::endl;
 						return SHM_ERROR | FAILED_TO_FTRUNCATE;
+					}
 				} else
 					file_size = lseek(sfd, 0, SEEK_END);
 				

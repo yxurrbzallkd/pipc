@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/shmem_test_rw.dir/shmem/shmem_test_rw.cpp.o  -o ../shmem_test_rw  -lrt 

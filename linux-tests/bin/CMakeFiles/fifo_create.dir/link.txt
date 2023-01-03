@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/fifo_create.dir/fifo/fifo_create.cpp.o  -o ../fifo_create 

@@ -6,14 +6,14 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	char * fifo_name = (char*)"/tmp/fifo";
-	pipc::fifo fp(fifo_name, true, O_RDWR);
+	pipc::fifo fp(fifo_name, true, FF_RDWR);
 	if (fp.setup() != SUCCESS) return -1;
 	
 	pid_t pid = fork();
 	if (pid < 0)
 		return -1;
 	if (pid == 0) {
-		pipc::fifo fc(fifo_name, false, O_WRONLY);
+		pipc::fifo fc(fifo_name, false, FF_WR);
 		if (fc.setup() != SUCCESS) return -1;
 		char hello[13] = "hello world!";
 		int res = fc.write_fifo(hello, 13);

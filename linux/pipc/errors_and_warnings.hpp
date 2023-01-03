@@ -5,55 +5,39 @@
 #include <iostream>
 #include <math.h>
 
-#define ARGUMENT_ERROR -(int)pow(2, 30)
+#define PROCESS_ERROR  -1 * (2 << 29)
+#define FIFO_ERROR     -1 * (2 << 28)
+#define SHM_ERROR      -1 * (2 << 27)
+#define PIPE_ERROR     -1 * (2 << 26)
+#define FORWARD_ERROR  -1 * (2 << 25)
 
-#define PROCESS_ERROR  -(int)pow(2, 29)
-
-#define FIFO_ERROR     -(int)pow(2, 28)
-
-#define SHM_ERROR      -(int)pow(2, 27)
-
-#define NOT_SETUP      -(int)pow(2, 26) // 2**14
-
-#define PIPE_ERROR     -(int)pow(2, 25)
-#define FAILED_TO_PIPE -(int)pow(2, 24)
-
-#define FORWARD_ERROR    -(int)pow(2, 23)
-#define PROCESS_FAILED   -(int)pow(2, 22)
-
-#define FAILED_TO_FORK  -(int)pow(2, 21)
-
-#define FAILED_TO_OPEN  -(int)pow(2, 20)
-#define FAILED_TO_CLOSE -(int)pow(2, 19)
-
-#define INVALID_FD      -(int)pow(2, 18)
-#define INVALID_FLAG    -(int)pow(2, 17)
-
-#define FAILED_TO_DUP  -(int)pow(2, 16)
-
-#define FAILED_TO_UNLINK    -(int)pow(2, 15)
-
-#define FAILED_TO_MKFIFO   -(int)pow(2, 14)
-
-#define FAILED_TO_MMAP      -(int)pow(2, 15)
-#define FAILED_TO_MUNMAP    -(int)pow(2, 14)
-#define FAILED_TO_FTRUNCATE -(int)pow(2, 13)
-
-#define OUT_OF_BOUNDS       -(int)pow(2, 12)
-
-#define BAD_WRITE           -(int)pow(2, 11)
-#define BAD_READ            -(int)pow(2, 10)
-
-#define SOCKET_ERROR          -(int)pow(2, 9)
-#define FAILED_TO_SETSOCKOPT  -(int)pow(2, 8)
-#define FAILED_TO_BIND        -(int)pow(2, 7)
-#define FAILED_TO_LISTEN      -(int)pow(2, 6)
-#define FAILED_TO_ACCEPT      -(int)pow(2, 5)
-#define FAILED_TO_SEND        -(int)pow(2, 4)
-#define BAD_ADDRESS           -(int)pow(2, 3)
-#define FAILED_TO_CONNECT     -(int)pow(2, 2)
-#define BUSY                  -(int)pow(2, 1)
-
+#define ARGUMENT_ERROR        1
+#define NOT_SETUP             2
+#define FAILED_TO_PIPE        4
+#define PROCESS_FAILED        8
+#define FAILED_TO_FORK        16
+#define FAILED_TO_OPEN        32
+#define FAILED_TO_CLOSE       64
+#define INVALID_FD            128
+#define INVALID_FLAG          256
+#define FAILED_TO_DUP         512
+#define FAILED_TO_UNLINK     1024
+#define FAILED_TO_MKFIFO     2048
+#define FAILED_TO_MMAP       4096
+#define FAILED_TO_MUNMAP     8192
+#define FAILED_TO_FTRUNCATE  1024 + 2
+#define OUT_OF_BOUNDS        4096 + 2
+#define BAD_WRITE            8192 + 2
+#define BAD_READ             2 << 13
+#define SOCKET_ERROR         2 << 14
+#define FAILED_TO_SETSOCKOPT 2 << 15
+#define FAILED_TO_BIND       2 << 16
+#define FAILED_TO_LISTEN     2 << 17
+#define FAILED_TO_ACCEPT     2 << 18
+#define FAILED_TO_SEND       2 << 19
+#define BAD_ADDRESS          2 << 20
+#define FAILED_TO_CONNECT    2 << 21
+#define BUSY                 2 << 22
 #define SUCCESS 0
 
 

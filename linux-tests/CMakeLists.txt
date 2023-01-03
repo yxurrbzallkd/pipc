@@ -11,7 +11,7 @@ target_include_directories(${PROJECT_NAME}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
-set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test background_test)
+#set(process_tests basic_process_test file_forward_test piped_process_test run_grab_test background_test)
 
 add_executable(hello process/hello.cpp) # used for testing
 
@@ -23,8 +23,8 @@ add_executable(${t} ./process/${t}.cpp)
 target_link_libraries(${t} PUBLIC ${PIPC_LIB})
 endforeach()
 
-set(fifo_tests fifo_test_wr fifo_test_fork_wr  fifo_test_rw fifo_test_fork_rw fifo_create
-				spare_test_wr wr_child spare_test_rw rw_child)
+#set(fifo_tests fifo_test_wr fifo_test_fork_wr  fifo_test_rw fifo_test_fork_rw fifo_create
+#				spare_test_wr wr_child spare_test_rw rw_child)
 
 foreach(t ${fifo_tests})
 add_executable(${t} ./fifo/${t}.cpp)
@@ -38,7 +38,7 @@ add_executable(${t} ./shmem/${t}.cpp)
 target_link_libraries(${t} PUBLIC ${PIPC_LIB} -lrt)
 endforeach()
 
-set(socket_tests socket_basic_test)
+#set(socket_tests socket_basic_test)
 
 foreach(t ${socket_tests})
 add_executable(${t} ./socket/${t}.cpp)

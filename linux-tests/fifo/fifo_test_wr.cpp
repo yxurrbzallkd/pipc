@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	char* program_name = argv[0];
 	if (argc == 1) {
 		// IMPORTANT!!! Pass O_RDWR else HANGS
-		pipc::fifo fp(fifo_name, true, O_RDWR);
+		pipc::fifo fp(fifo_name, true, FF_RDWR);
 		if (fp.setup() != SUCCESS) return -1;
 
 		char hello[13] = "hello world!";
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 		if (res != SUCCESS) return res;
 	} else {
 		fifo_name = argv[1];
-		pipc::fifo fc(fifo_name, false, O_RDONLY);
+		pipc::fifo fc(fifo_name, false, FF_RD);
 		if (fc.setup() != SUCCESS) exit(-1);
 		char buf[1024];
 		if (fc.read_fifo(buf, 1024) != SUCCESS) exit(-2);

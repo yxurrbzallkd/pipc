@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/background_test.dir/process/background_test.cpp.o  -o ../background_test 

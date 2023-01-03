@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 		char* program_name = argv[0];
 		char * shm_name = (char*)"/shm_object";
 		// IMPORTANT!!! Pass O_RDWR else HANGS
-		pipc::shmem sp(shm_name, BUF_SIZE, O_RDWR, PROT_READ);
+		pipc::shmem sp(shm_name, BUF_SIZE, SF_RDWR, MF_RD);
 		if (sp.setup() != SUCCESS)
 			return -1;
 		pid_t pid = fork();
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	} else if (argc == 2) {
 		char* shm_name = argv[1];
-		pipc::shmem sc(shm_name, O_WRONLY, PROT_WRITE);
+		pipc::shmem sc(shm_name, SF_WR, MF_WR);
 		if (sc.setup() != SUCCESS)
 			exit(-1);
 		char hello[] = "hello world!";

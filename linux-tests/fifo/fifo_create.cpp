@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 	if (argc > 1)
 		fifo_name = argv[1];
 	char* program_name = argv[0];
-	pipc::fifo fp(fifo_name, true, O_RDWR);
+	pipc::fifo fp(fifo_name, true, FF_RDWR);
 	if (fp.setup() != SUCCESS) return -1;
 	return 0;
 }
